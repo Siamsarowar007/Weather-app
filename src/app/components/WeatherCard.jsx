@@ -24,7 +24,7 @@ const WeatherCard = ({ city, weather }) => {
     <div className="bg-white p-4 rounded shadow text-center max-w-sm mx-auto">
       <h2 className="text-2xl font-semibold mb-2">{city}</h2>
       <img
-        src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+        src={`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&units=metric`}
         alt={weather.weather[0].description}
         className="mx-auto"
       />

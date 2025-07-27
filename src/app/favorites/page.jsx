@@ -1,46 +1,40 @@
-"use client"
-import { useEffect, useState } from 'react';
-import WeatherCard from '../components/WeatherCard';
-import { getToken } from '../../../utils/auth';
+"use client";
+import { useState } from "react";
 
-export default function Favorites() {
-  const [favorites, setFavorites] = useState([]);
-  const [weathers, setWeathers] = useState([]);
+export default function WeatherApp() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      const token = getToken();
-      if (!token) return;
-
-      const res = await fetch('/api/favorites', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const cities = await res.json();
-      setFavorites(cities);
-
-      const weatherData = await Promise.all(
-        cities.map((city) =>
-          fetch(`/api/weather/${city}`).then((res) => res.json())
-        )
-      );
-
-      setWeathers(weatherData);
-    };
-
-    fetchFavorites();
-  }, []);
+  const handleFetch = async () => {
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=8daf567b6eed1bc332964115f4cfb1db&units=metric`
+    );
+    const data = await res.json();
+    setWeather(data);
+  };
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl mb-4 text-center">Your Favorite Cities</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {weathers.map((weather, idx) => (
-          <WeatherCard key={idx} city={favorites[idx]} weather={weather} />
-        ))}
-      </div>
+      <input
+        type="text"
+        value={city}
+        placeholder="শহরের নাম লিখুন"
+        onChange={(e) => setCity(e.target.value)}
+        className="border px-2 py-1"
+      />
+      <button onClick={handleFetch} className="ml-2 bg-blue-500 text-white px-4 py-1">
+        আবহাওয়া দেখুন
+      </button>
+
+      {weather && (
+        <div className="mt-4">
+          <h2>{weather.name} এর আবহাওয়া</h2>
+          <p>তাপমাত্রা: {weather.main.temp}°C</p>
+          <p>আবহাওয়া: {weather.weather[0].description}</p>
+          <p>আর্দ্রতা: {weather.main.humidity}%</p>
+        </div>
+      )}
     </div>
   );
 }
+
